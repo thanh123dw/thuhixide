@@ -119,9 +119,11 @@
     <div id="ui-layer">
         <!-- Vandiep -->
         <div class="guide">
-            🖐 <b>Open Hand:</b> Explode &nbsp;|&nbsp; 🫶 <b>Heart:</b> Love &nbsp;|&nbsp; ✊ <b>Fist:</b> Tree<br>
+            🖐 <b>Open Hand:</b> Explode &nbsp;|&nbsp; 🫶 <b>Heart:</b> Love &nbsp;|&nbsp; ✊ <b>Fist:</b> Tree
+            &nbsp;|&nbsp; 🙌 <b>Two Hands:</b> Zoom<br>
             🖱️ <b>Left Click:</b> Explode &nbsp;|&nbsp; <b>Right Click:</b> Heart &nbsp;|&nbsp; <b>Middle Click:</b>
-            Tree &nbsp;|&nbsp; <b>Scroll:</b> Zoom
+            Tree<br>
+            🖱️ <b>Scroll:</b> Change Photo (in Photo mode) / Zoom (other modes)
         </div>
         <button id="btnStart" onclick="startSystem()">START MAGIC</button>
     </div>
@@ -548,15 +550,32 @@
             hands.onResults(results => {
                 ctx.clearRect(0, 0, 100, 75); ctx.drawImage(results.image, 0, 0, 100, 75);
 
-                // --- Hand Logic  ---
+                // --- Two Hands Logic for Heart & Zoom Vandiep ---
                 if (results.multiHandLandmarks.length === 2) {
                     useMouseControl = false; // Switch to hand control Vandiep
                     const h1 = results.multiHandLandmarks[0]; const h2 = results.multiHandLandmarks[1];
+
+                    // Calculate distances for heart gesture
                     const distIndex = Math.hypot(h1[8].x - h2[8].x, h1[8].y - h2[8].y);
                     const distThumb = Math.hypot(h1[4].x - h2[4].x, h1[4].y - h2[4].y);
+
+                    // Heart gesture - fingers touching
                     if (distIndex < 0.15 && distThumb < 0.15) {
-                        state = 'HEART'; return;
+                        state = 'HEART';
+                        return;
                     }
+
+                    // Zoom gesture - distance between two palms Vandiep
+                    const palm1 = h1[9]; // Middle of hand
+                    const palm2 = h2[9];
+                    const palmDist = Math.hypot(palm1.x - palm2.x, palm1.y - palm2.y);
+
+                    // Map palm distance to zoom (0.2 to 1.0 distance -> 60 to 150 zoom)
+                    const normalizedDist = Math.max(0.2, Math.min(1.0, palmDist));
+                    const targetZoom = 60 + (normalizedDist - 0.2) * (150 - 60) / 0.8;
+                    cameraZoom += (targetZoom - cameraZoom) * 0.1; // Smooth zoom
+
+                    return; // Don't process single hand gestures when two hands detected
                 }
 
                 if (results.multiHandLandmarks.length > 0) {
@@ -621,21 +640,33 @@
             e.preventDefault();
         });
 
-        // Mouse wheel zoom Vandiep
-        document.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            useMouseControl = true;
+         document.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                useMouseControl = true;
 
-            // Zoom in/out based on wheel direction
-            const zoomSpeed = 5;
-            if (e.deltaY < 0) {
-                // Scroll up - zoom in
-                cameraZoom = Math.max(minZoom, cameraZoom - zoomSpeed);
-            } else {
-                // Scroll down - zoom out
-                cameraZoom = Math.min(maxZoom, cameraZoom + zoomSpeed);
-            }
-        }, { passive: false });
+                if (state === 'EXPLODE') {
+                    // In EXPLODE mode, scroll switches to PHOTO and zooms to nearest photo
+                    state = 'PHOTO';
+                    // selectedIndex is already set to the nearest photo in animate()
+                } else if (state === 'PHOTO') {
+                    // Scroll to change photos
+                    if (e.deltaY < 0) {
+                        // Scroll up - previous photo
+                        selectedIndex = (selectedIndex - 1 + photoMeshes.length) % photoMeshes.length;
+                    } else {
+                        // Scroll down - next photo
+                        selectedIndex = (selectedIndex + 1) % photoMeshes.length;
+                    }
+                } else {
+                    // Zoom in other modes (TREE, HEART)
+                    const zoomSpeed = 5;
+                    if (e.deltaY < 0) {
+                        cameraZoom = Math.max(minZoom, cameraZoom - zoomSpeed);
+                    } else {
+                        cameraZoom = Math.min(maxZoom, cameraZoom + zoomSpeed);
+                    }
+                }
+            }, { passive: false });
     </script>
 </body>
 
