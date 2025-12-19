@@ -110,6 +110,17 @@
             padding: 10px;
         }
     </style>
+    <script>
+        let isAnimating = false; // Flag để kiểm tra animation
+        let lastWheelTime = 0;
+        const wheelDelay = 300; // Delay giữa các lần scroll (ms)
+
+        // Variables cho momentum effect
+        let mouseVelocity = 0;
+        let lastMouseX = 0;
+        let momentumDecay = 0.95; // Độ giảm tốc (0.9-0.98), càng cao càng quay lâu
+        let minVelocity = 0.0001; // Ngưỡng dừng
+    </script>
 </head>
 
 <body>
@@ -466,6 +477,23 @@
 
         function animate() {
             requestAnimationFrame(animate);
+
+            // Áp dụng momentum khi không di chuyển chuột
+            if (Math.abs(mouseVelocity) > minVelocity) {
+                mouseX += mouseVelocity;
+
+                // Giới hạn mouseX trong khoảng [0, 1]
+                mouseX = Math.max(0, Math.min(1, mouseX));
+
+                // Giảm dần velocity (hiệu ứng quán tính)
+                mouseVelocity *= momentumDecay;
+
+                // Dừng hẳn khi velocity quá nhỏ
+                if (Math.abs(mouseVelocity) < minVelocity) {
+                    mouseVelocity = 0;
+                }
+            }
+
             const time = Date.now() * 0.001;
             const speed = 0.08;
             const currentX = useMouseControl ? mouseX : handX; // Use mouse or hand Vandiep
@@ -614,29 +642,52 @@
         window.addEventListener('resize', () => {
             if (camera) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
         });
-        
+
         if (!isMobileDevice()) {
             // ==========================================
             // MOUSE CONTROLS Vandiep
-            // ==========================================
+            // =========================================
+
             document.addEventListener('mousemove', (e) => {
-                mouseX = e.clientX / window.innerWidth;
+                const newMouseX = e.clientX / window.innerWidth;
+
+                // Tính vận tốc (velocity) dựa trên sự thay đổi vị trí chuột
+                mouseVelocity = newMouseX - (lastMouseX || newMouseX);
+
+                // Giới hạn vùng mouseX (0 -> 1)
+                mouseX = Math.max(0, Math.min(1, newMouseX));
+
+                lastMouseX = newMouseX;
                 useMouseControl = true;
             });
 
             document.addEventListener('mousedown', (e) => {
                 e.preventDefault();
+
+                // Chặn nếu đang animate
+                if (isAnimating) return;
+
                 useMouseControl = true;
+                isAnimating = true;
 
                 if (e.button === 0 && !e.ctrlKey) {
                     // Left click - Explode
                     state = 'EXPLODE';
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 1000); // Thời gian animation explode
                 } else if (e.button === 2) {
                     // Right click - Heart
                     state = 'HEART';
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 1000); // Thời gian animation heart
                 } else if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
                     // Middle click or Ctrl+Left click - Tree
                     state = 'TREE';
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 1000); // Thời gian animation tree
                 }
             });
 
@@ -647,14 +698,25 @@
 
             document.addEventListener('wheel', (e) => {
                 e.preventDefault();
+
+                // Chặn nếu đang animate hoặc scroll quá nhanh
+                const now = Date.now();
+                if (isAnimating || now - lastWheelTime < wheelDelay) return;
+
+                lastWheelTime = now;
                 useMouseControl = true;
 
                 if (state === 'EXPLODE') {
                     // In EXPLODE mode, scroll switches to PHOTO and zooms to nearest photo
+                    isAnimating = true;
                     state = 'PHOTO';
-                    // selectedIndex is already set to the nearest photo in animate()
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 800); // Thời gian chuyển sang PHOTO mode
+
                 } else if (state === 'PHOTO') {
                     // Scroll to change photos
+                    isAnimating = true;
                     if (e.deltaY < 0) {
                         // Scroll up - previous photo
                         selectedIndex = (selectedIndex - 1 + photoMeshes.length) % photoMeshes.length;
@@ -662,8 +724,12 @@
                         // Scroll down - next photo
                         selectedIndex = (selectedIndex + 1) % photoMeshes.length;
                     }
+                    setTimeout(() => {
+                        isAnimating = false;
+                    }, 600); // Thời gian chuyển ảnh
+
                 } else {
-                    // Zoom in other modes (TREE, HEART)
+                    // Zoom in other modes (TREE, HEART) - không cần chờ
                     const zoomSpeed = 5;
                     if (e.deltaY < 0) {
                         cameraZoom = Math.max(minZoom, cameraZoom - zoomSpeed);
