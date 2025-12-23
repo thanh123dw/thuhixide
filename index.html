@@ -228,6 +228,369 @@
             transition: opacity 1s ease-in 1s;
         }
 
+        /* Christmas Card Overlay Vandiep */
+        #card-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            perspective: 2000px;
+        }
+
+        #card-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .card-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            transform-style: preserve-3d;
+        }
+
+        /* Envelope wrapper */
+        .envelope-wrapper {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            animation: envelopeShake 0.5s ease;
+        }
+
+        @keyframes envelopeShake {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            25% {
+                transform: translateY(-10px) rotate(-2deg);
+            }
+
+            75% {
+                transform: translateY(-10px) rotate(2deg);
+            }
+        }
+
+        /* Envelope back */
+        .envelope-back {
+            position: absolute;
+            width: 600px;
+            height: 400px;
+            background: linear-gradient(135deg, #8B0000, #D32F2F);
+            border: 4px solid #FFD700;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Envelope flap */
+        .envelope-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 300px solid transparent;
+            border-right: 300px solid transparent;
+            border-top: 200px solid #A52A2A;
+            transform-origin: top center;
+            transition: transform 1.5s ease;
+            z-index: 3;
+            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+        }
+
+        #card-overlay.show .envelope-flap {
+            transform: translateX(-50%) rotateX(-180deg);
+            transition-delay: 0.5s;
+        }
+
+        /* Envelope front fold */
+        .envelope-front {
+            position: absolute;
+            width: 0;
+            height: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 300px solid transparent;
+            border-right: 300px solid transparent;
+            border-bottom: 200px solid #8B0000;
+            z-index: 2;
+        }
+
+        /* Wax seal on envelope */
+        .wax-seal {
+            position: absolute;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #FFD700, #B8860B);
+            border-radius: 50%;
+            border: 3px solid #8B4513;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            transition: all 1s ease;
+        }
+
+        #card-overlay.show .wax-seal {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) rotate(360deg);
+            transition-delay: 0.3s;
+        }
+
+        /* Christmas Card inside envelope */
+        .christmas-card {
+            position: absolute;
+            width: 550px;
+            height: 350px;
+            left: 25px;
+            top: 25px;
+            background: linear-gradient(135deg, #fff, #ffe6e6);
+            border: 5px solid #FFD700;
+            border-radius: 15px;
+            box-shadow:
+                0 0 60px rgba(255, 215, 0, 0.8),
+                0 0 100px rgba(255, 0, 0, 0.5),
+                inset 0 0 30px rgba(255, 215, 0, 0.2);
+            transform: translateY(0) scale(0.95);
+            transition: all 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        #card-overlay.show .christmas-card {
+            transform: translateY(-50px) scale(1.05);
+            opacity: 1;
+            transition-delay: 1s;
+            animation: cardPop 0.6s ease 2s forwards, cardFloat 3s ease-in-out 2.6s infinite;
+        }
+
+        @keyframes cardPop {
+            0% {
+                transform: translateY(-50px) scale(1.05);
+            }
+
+            50% {
+                transform: translateY(-80px) scale(1.15) rotate(5deg);
+            }
+
+            100% {
+                transform: translateY(-60px) scale(1.1) rotate(0deg);
+            }
+        }
+
+        @keyframes cardFloat {
+
+            0%,
+            100% {
+                transform: translateY(-60px) scale(1.1) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-70px) scale(1.1) rotate(2deg);
+            }
+        }
+
+        .card-content {
+            padding: 30px;
+            text-align: center;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 230, 230, 0.9));
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #card-overlay.show .card-content {
+            opacity: 1;
+            transition-delay: 3s;
+        }
+
+        .card-title {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(45deg, #D32F2F, #FFD700, #D32F2F);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            margin-bottom: 20px;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            animation: titleShine 3s ease-in-out infinite;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes titleShine {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .card-message {
+            font-size: 16px;
+            color: #8B0000;
+            line-height: 1.6;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 500;
+        }
+
+        .card-signature {
+            font-size: 20px;
+            color: #D32F2F;
+            font-style: italic;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+            margin-top: auto;
+            font-weight: 600;
+        }
+
+        .card-decoration {
+            position: absolute;
+            font-size: 50px;
+            opacity: 0.4;
+            animation: decorFloat 4s ease-in-out infinite;
+        }
+
+        .card-decoration.top-left {
+            top: 15px;
+            left: 15px;
+        }
+
+        .card-decoration.top-right {
+            top: 15px;
+            right: 15px;
+            animation-delay: 1s;
+        }
+
+        .card-decoration.bottom-left {
+            bottom: 15px;
+            left: 15px;
+            animation-delay: 2s;
+        }
+
+        .card-decoration.bottom-right {
+            bottom: 15px;
+            right: 15px;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes decorFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotate(10deg);
+            }
+        }
+
+        #btnCloseCard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(139, 0, 0, 0.8);
+            border: 2px solid #FFD700;
+            color: #FFF;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 201;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        #btnCloseCard:hover {
+            background: rgba(211, 47, 47, 1);
+            transform: scale(1.15) rotate(90deg);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.8);
+        }
+
+        .snowflake {
+            position: absolute;
+            color: #FFF;
+            font-size: 20px;
+            opacity: 0.8;
+            animation: snowfall linear infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+            }
+
+            100% {
+                transform: translateY(600px) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                width: 90%;
+                height: auto;
+            }
+
+            .envelope-back,
+            .envelope-wrapper {
+                width: 100%;
+                height: 400px;
+            }
+
+            .christmas-card {
+                width: calc(100% - 50px);
+                height: 350px;
+            }
+
+            .card-title {
+                font-size: 28px;
+            }
+
+            .card-message {
+                font-size: 14px;
+            }
+        }
+
         /* Exit button Vandiep */
         #btnExit {
             position: absolute;
@@ -338,6 +701,45 @@
     <!-- Exit Button Vandiep -->
     <button id="btnExit" onclick="exitToHome()" style="display:none;">← EXIT</button>
 
+    <!-- Christmas Card Overlay Vandiep -->
+    <div id="card-overlay">
+        <button id="btnCloseCard" onclick="closeCard()">×</button>
+        <div class="card-container">
+            <!-- Envelope -->
+            <div class="envelope-wrapper">
+                <div class="envelope-back"></div>
+                <div class="envelope-flap"></div>
+                <div class="envelope-front"></div>
+                <div class="wax-seal">🎄</div>
+            </div>
+
+            <!-- Card inside envelope -->
+            <div class="christmas-card">
+                <div class="card-content">
+                    <div class="card-decoration top-left">🎄</div>
+                    <div class="card-decoration top-right">⭐</div>
+                    <div class="card-decoration bottom-left">🎁</div>
+                    <div class="card-decoration bottom-right">❄️</div>
+
+                    <div class="card-title">MERRY CHRISTMAS</div>
+
+                    <div class="card-message">
+                        Chúc chị luôn giữ được sức khỏe giữa những ngày bận rộn,
+                        Mong là dù lịch dạy có dày, bạn vẫn có những khoảng lặng đủ yên để nghỉ ngơi,
+                        và đủ năng lượng để tiếp tục làm điều mình giỏi nhất.
+                        Chúc chị một mùa Giáng Sinh an lành.</br>
+                        Nếu có khoảnh khắc nào đó trong giáng sinh này
+                        bạn chợt thấy vui vẻ hơn 1 chút, hy vọng… em là một phần trong đó.
+                    </div>
+
+                    <div class="card-signature">
+                        To Thuhixidep ❤️<br>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- UI Vandiep -->
     <div id="ui-layer">
         <!-- Vandiep -->
@@ -349,6 +751,8 @@
             🖱️ <b>Scroll:</b> Change Photo (in Photo mode) / Zoom (other modes)
         </div>
         <button id="btnStart" onclick="startSystem()">START MAGIC</button>
+        <br><br>
+        <button id="btnOpenCard" onclick="openCard()">OPEN CARD 💌</button>
     </div>
 
     <!-- Vandiep -->
@@ -433,6 +837,8 @@
         const minZoom = 50; // Min zoom distance Vandiep
         const maxZoom = 200; // Max zoom distance Vandiep
         let isExiting = false; // Flag for exit animation Vandiep
+        let showIntroAnimation = true; // Flag for intro animation Vandiep
+        let introAnimationTime = 0; // Timer for intro animation Vandiep
 
         // ==========================================
         // 3. THREE.JS SYSTEM Vandiep
@@ -718,6 +1124,71 @@
                 return;
             }
 
+            // Intro Animation - Show MERRY CHRISTMAS with zoom effect
+            if (showIntroAnimation) {
+                introAnimationTime += 0.016; // ~60fps
+
+                // Hide all particles during intro
+                groupGold.visible = false;
+                groupRed.visible = false;
+                groupGift.visible = false;
+                photoMeshes.forEach(m => m.visible = false);
+                starMesh.visible = false;
+
+                // Show and animate title
+                titleMesh.visible = true;
+
+                if (introAnimationTime < 3) {
+                    // Zoom in effect (0 -> 3 seconds)
+                    const progress = introAnimationTime / 3;
+                    const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+
+                    const scale = 0.1 + easeProgress * 0.9; // From 0.1 to 1.0
+                    titleMesh.scale.set(scale, scale, scale);
+
+                    // Rotation effect
+                    titleMesh.rotation.z = (1 - easeProgress) * Math.PI * 2;
+
+                    // Opacity fade in
+                    titleMesh.material.opacity = easeProgress;
+
+                    // Glow effect
+                    const glowIntensity = Math.sin(introAnimationTime * 5) * 0.3 + 0.7;
+                    titleMesh.material.opacity = easeProgress * glowIntensity;
+
+                } else if (introAnimationTime < 4) {
+                    // Hold for 1 second
+                    titleMesh.scale.set(1, 1, 1);
+                    titleMesh.rotation.z = 0;
+                    const pulse = Math.sin(introAnimationTime * 10) * 0.1 + 1;
+                    titleMesh.scale.set(pulse, pulse, pulse);
+
+                } else {
+                    // Fade out and transition to tree
+                    const fadeProgress = (introAnimationTime - 4) / 1;
+                    titleMesh.material.opacity = 1 - fadeProgress;
+                    titleMesh.scale.set(1 + fadeProgress * 0.5, 1 + fadeProgress * 0.5, 1);
+
+                    if (introAnimationTime > 5) {
+                        // End intro animation
+                        showIntroAnimation = false;
+                        introAnimationTime = 0;
+                        titleMesh.scale.set(1, 1, 1);
+                        titleMesh.rotation.z = 0;
+                        titleMesh.material.opacity = 1;
+
+                        // Show particles
+                        groupGold.visible = true;
+                        groupRed.visible = true;
+                        groupGift.visible = true;
+                        state = 'TREE';
+                    }
+                }
+
+                renderer.render(scene, camera);
+                return;
+            }
+
             // Áp dụng momentum khi không di chuyển chuột
             if (Math.abs(mouseVelocity) > minVelocity) {
                 mouseX += mouseVelocity;
@@ -883,6 +1354,45 @@
         }
 
         // ==========================================
+        // CARD FUNCTIONS Vandiep
+        // ==========================================
+        function openCard() {
+            const overlay = document.getElementById('card-overlay');
+            overlay.classList.add('show');
+
+            // Add snowflakes
+            createSnowflakes();
+
+            // Play music if not playing
+            if (bgMusic.paused) {
+                bgMusic.play().catch(e => console.log(e));
+            }
+        }
+
+        function closeCard() {
+            const overlay = document.getElementById('card-overlay');
+            overlay.classList.remove('show');
+
+            // Remove snowflakes
+            const snowflakes = document.querySelectorAll('.snowflake');
+            snowflakes.forEach(flake => flake.remove());
+        }
+
+        function createSnowflakes() {
+            const overlay = document.getElementById('card-overlay');
+            for (let i = 0; i < 30; i++) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake';
+                snowflake.textContent = '❄';
+                snowflake.style.left = Math.random() * 100 + '%';
+                snowflake.style.animationDuration = (Math.random() * 4 + 3) + 's';
+                snowflake.style.animationDelay = Math.random() * 3 + 's';
+                snowflake.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                overlay.appendChild(snowflake);
+            }
+        }
+
+        // ==========================================
         // EXIT TO HOME FUNCTION Vandiep
         // ==========================================
         function exitToHome() {
@@ -938,6 +1448,8 @@
                 selectedIndex = 0;
                 isExiting = false;
                 cameraZoom = 100;
+                showIntroAnimation = true;
+                introAnimationTime = 0;
 
                 // Reset UI
                 document.body.classList.remove('exiting');
