@@ -17,29 +17,57 @@
         body {
             margin: 0;
             overflow: hidden;
-            background-color: #000000;
-            font-family: 'Segoe UI', sans-serif;
-        }
-         body {
-            margin: 0;
-            overflow: hidden;
             background: url('./background.jpg') no-repeat center center fixed;
             background-size: cover;
             font-family: 'Segoe UI', sans-serif;
+            position: relative;
         }
-        
+
+        /* Background overlay - fade out khi start */
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.3);
-            z-index: -1;
+            z-index: 1;
+            transition: opacity 2s ease-in-out;
+            pointer-events: none;
         }
 
-         button {
+        body.started::before {
+            opacity: 0;
+        }
+
+        /* Background image - fade out khi start */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('./background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            z-index: 0;
+            transition: opacity 2.5s ease-in-out;
+        }
+
+        body.started::after {
+            opacity: 0;
+        }
+
+        body.exiting::after {
+            opacity: 1;
+        }
+
+        body.exiting::before {
+            opacity: 1;
+        }
+
+        button {
             pointer-events: auto;
             cursor: pointer;
             background: linear-gradient(135deg, #D32F2F, #8B0000, #D32F2F);
@@ -50,7 +78,7 @@
             border-radius: 50px;
             font-weight: 800;
             font-size: 18px;
-            box-shadow: 
+            box-shadow:
                 0 0 40px rgba(255, 215, 0, 0.6),
                 0 0 60px rgba(255, 0, 0, 0.4),
                 inset 0 0 20px rgba(255, 215, 0, 0.2);
@@ -84,7 +112,7 @@
 
         button:hover {
             transform: scale(1.1) rotate(2deg);
-            box-shadow: 
+            box-shadow:
                 0 0 60px rgba(255, 215, 0, 0.9),
                 0 0 80px rgba(255, 0, 0, 0.6),
                 inset 0 0 30px rgba(255, 215, 0, 0.3);
@@ -93,17 +121,20 @@
 
         button:active {
             transform: scale(0.95);
-            box-shadow: 
+            box-shadow:
                 0 0 30px rgba(255, 215, 0, 0.8),
                 0 0 40px rgba(255, 0, 0, 0.5),
                 inset 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
         @keyframes magicPulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
                 filter: brightness(1);
             }
+
             50% {
                 transform: scale(1.08);
                 filter: brightness(1.2);
@@ -114,20 +145,25 @@
             0% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
+
             100% {
                 background-position: 0% 50%;
             }
         }
 
         @keyframes sparkleLeft {
-            0%, 100% {
+
+            0%,
+            100% {
                 left: -30px;
                 opacity: 0.3;
                 transform: translateY(-50%) scale(0.8);
             }
+
             50% {
                 left: -20px;
                 opacity: 1;
@@ -136,11 +172,14 @@
         }
 
         @keyframes sparkleRight {
-            0%, 100% {
+
+            0%,
+            100% {
                 right: -30px;
                 opacity: 0.3;
                 transform: translateY(-50%) scale(0.8);
             }
+
             50% {
                 right: -20px;
                 opacity: 1;
@@ -152,6 +191,19 @@
             width: 100%;
             height: 100vh;
             display: block;
+            position: relative;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 2s ease-in-out 0.5s;
+        }
+
+        body.started #canvas-container {
+            opacity: 1;
+        }
+
+        body.exiting #canvas-container {
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
         }
 
         /* UI Center Vandiep */
@@ -162,6 +214,64 @@
             text-align: center;
             pointer-events: none;
             z-index: 100;
+            transition: opacity 1s ease-out;
+        }
+
+        body.started #ui-layer {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        body.exiting #ui-layer {
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 1s ease-in 1s;
+        }
+
+        /* Exit button Vandiep */
+        #btnExit {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            pointer-events: auto;
+            cursor: pointer;
+            background: linear-gradient(135deg, #8B0000, #D32F2F, #8B0000);
+            background-size: 200% 200%;
+            color: #FFF;
+            border: 2px solid #FFD700;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: shimmer 3s linear infinite;
+            z-index: 101;
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.5s ease;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+        }
+
+        body.started #btnExit {
+            opacity: 1;
+            transform: translateX(0);
+            transition-delay: 1s;
+        }
+
+        body.exiting #btnExit {
+            opacity: 0;
+            transform: translateX(-100px);
+        }
+
+        #btnExit:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            border-color: #FFF;
+        }
+
+        #btnExit:active {
+            transform: scale(0.95);
         }
 
         /* Guide text Vandiep */
@@ -170,34 +280,6 @@
             font-size: 13px;
             margin-bottom: 20px;
             text-shadow: 0 2px 4px black;
-        }
-
-        button {
-            pointer-events: auto;
-            cursor: pointer;
-            background: linear-gradient(to bottom, #D32F2F, #8B0000);
-            color: #FFF;
-            border: 2px solid #FFD700;
-            padding: 15px 50px;
-            border-radius: 30px;
-            font-weight: 800;
-            font-size: 16px;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
         }
 
         /* Camera Preview Vandiep */
@@ -252,6 +334,9 @@
 
 <body>
     <div id="error-log"></div>
+
+    <!-- Exit Button Vandiep -->
+    <button id="btnExit" onclick="exitToHome()" style="display:none;">← EXIT</button>
 
     <!-- UI Vandiep -->
     <div id="ui-layer">
@@ -347,6 +432,7 @@
         let cameraZoom = 100; // Initial zoom Vandiep
         const minZoom = 50; // Min zoom distance Vandiep
         const maxZoom = 200; // Max zoom distance Vandiep
+        let isExiting = false; // Flag for exit animation Vandiep
 
         // ==========================================
         // 3. THREE.JS SYSTEM Vandiep
@@ -605,6 +691,33 @@
         function animate() {
             requestAnimationFrame(animate);
 
+            // Stop rendering during exit animation
+            if (isExiting) {
+                // Smooth particle dispersion effect
+                const time = Date.now() * 0.001;
+                [groupGold, groupRed, groupGift].forEach(group => {
+                    const positions = group.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i] *= 1.02; // Expand outward
+                        positions[i + 1] *= 1.02;
+                        positions[i + 2] *= 1.02;
+                    }
+                    group.geometry.attributes.position.needsUpdate = true;
+                    group.material.opacity *= 0.95; // Fade out
+                });
+
+                photoMeshes.forEach(m => {
+                    m.material.opacity *= 0.9;
+                });
+
+                if (titleMesh) titleMesh.material.opacity *= 0.9;
+                if (starMesh) starMesh.material.opacity *= 0.9;
+                if (loveMesh) loveMesh.material.opacity *= 0.9;
+
+                renderer.render(scene, camera);
+                return;
+            }
+
             // Áp dụng momentum khi không di chuyển chuột
             if (Math.abs(mouseVelocity) > minVelocity) {
                 mouseX += mouseVelocity;
@@ -691,9 +804,16 @@
         }
 
         function startSystem() {
-            document.getElementById('btnStart').style.display = 'none';
+            // Add started class to body for smooth transitions
+            document.body.classList.add('started');
+            document.getElementById('btnExit').style.display = 'block';
+
             bgMusic.play().catch(e => console.log(e));
-            init3D();
+
+            // Delay 3D init slightly for smooth transition
+            setTimeout(() => {
+                init3D();
+            }, 500);
 
             const video = document.getElementsByClassName('input_video')[0];
             const canvas = document.getElementById('camera-preview');
@@ -761,6 +881,70 @@
             });
             cameraUtils.start();
         }
+
+        // ==========================================
+        // EXIT TO HOME FUNCTION Vandiep
+        // ==========================================
+        function exitToHome() {
+            if (isExiting) return;
+
+            isExiting = true;
+            document.body.classList.add('exiting');
+            document.body.classList.remove('started');
+
+            // Fade out music
+            const fadeOutInterval = setInterval(() => {
+                if (bgMusic.volume > 0.05) {
+                    bgMusic.volume -= 0.05;
+                } else {
+                    bgMusic.pause();
+                    bgMusic.volume = 1.0;
+                    clearInterval(fadeOutInterval);
+                }
+            }, 50);
+
+            // Reset after transition
+            setTimeout(() => {
+                // Reset Three.js scene
+                if (scene) {
+                    scene.traverse(object => {
+                        if (object.geometry) object.geometry.dispose();
+                        if (object.material) {
+                            if (Array.isArray(object.material)) {
+                                object.material.forEach(mat => mat.dispose());
+                            } else {
+                                object.material.dispose();
+                            }
+                        }
+                    });
+
+                    while (scene.children.length > 0) {
+                        scene.remove(scene.children[0]);
+                    }
+
+                    renderer.dispose();
+                    const container = document.getElementById('canvas-container');
+                    while (container.firstChild) {
+                        container.removeChild(container.firstChild);
+                    }
+                }
+
+                // Reset variables
+                scene = camera = renderer = null;
+                groupGold = groupRed = groupGift = null;
+                photoMeshes = [];
+                titleMesh = starMesh = loveMesh = null;
+                state = 'TREE';
+                selectedIndex = 0;
+                isExiting = false;
+                cameraZoom = 100;
+
+                // Reset UI
+                document.body.classList.remove('exiting');
+                document.getElementById('btnExit').style.display = 'none';
+            }, 2000);
+        }
+
         function isMobileDevice() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         }
