@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mong chị sẽ thích</title>
+    <title>Hihi haha</title>
     <link rel="icon" type="image/jpeg" href="logo.jpeg">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -41,7 +41,7 @@
             opacity: 0;
         }
 
-        /* Background image - fade out khi start */
+       /* Background image - fade out khi start */
         body::after {
             content: '';
             position: fixed;
@@ -53,6 +53,12 @@
             background-size: cover;
             z-index: 0;
             transition: opacity 2.5s ease-in-out;
+            animation: backgroundPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes backgroundPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.07); }
         }
 
         body.started::after {
